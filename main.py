@@ -5,3 +5,5 @@ ma = yo.get_mother()
 pa = ma.get_father()
 
 print(pa.deceased)
+
+exit()
