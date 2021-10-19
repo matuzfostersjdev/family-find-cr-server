@@ -9,3 +9,4 @@ soupsieve
 urllib3
 wheel
 flask
+gunicorn
