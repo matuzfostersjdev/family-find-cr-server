@@ -9,5 +9,5 @@ app = Flask(__name__)
 def get_person():
     person_id = request.args.get('id', type=str)
     print(person_id)
-    return Person(person_id).dictify  # Fix 3 arguments being passed
+    return Person(person_id).dictify()  # Fix 3 arguments being passed
 
