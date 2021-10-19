@@ -8,6 +8,14 @@ app = Flask(__name__)
 @app.route('/get-person', methods=['GET'])
 def get_person():
     person_id = request.args.get('id', type=str)
-    print(person_id)
-    return Person(person_id).dictify()  # Fix 3 arguments being passed
+    return Person(person_id).dictify()
+
+
+@app.route('/get-parents', methods=['GET'])
+def get_parents():
+    person_id = request.args.get('id', type=str)
+    return{
+        'father': Person(person_id).get_father().dictify(),
+        'mother': Person(person_id).get_mother().dictify()
+    }
 

@@ -1,9 +1,24 @@
-import test
+import person_retriever
+
+
+class UnknownPerson:
+    def __init__(self, nombre):
+        self.__name = nombre
+
+    def dictify(self):
+        return {
+            'name': self.__name,
+            'unknown': True
+        }
+
+    @property
+    def name(self):
+        return self.__name
 
 
 class Person:
     def __init__(self, cedula):
-        results = test.get_person(cedula)
+        results = person_retriever.get_person(cedula)
         self.__id = results['cedula']
         self.__name = results['nombreCompleto']
         self.__aka = results['conocidoComo']
@@ -18,14 +33,14 @@ class Person:
             self.__deceased = results['difunto']
 
     def get_mother(self):
-        if not self.__mother_id or self.__mother_id == '' or self.__mother_id == ' ':
-            return False
+        if not self.__mother_id or self.__mother_id == '' or self.__mother_id == '0':
+            return UnknownPerson(self.__mother_name)
         else:
             return Person(self.__mother_id)
 
     def get_father(self):
-        if not self.__father_id or self.__father_id == '' or self.__father_id == ' ':
-            return False
+        if not self.__father_id or self.__father_id == '' or self.__father_id == '0':
+            return UnknownPerson(self.__mother_name)
         else:
             return Person(self.__father_id)
 
