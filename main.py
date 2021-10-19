@@ -1,9 +1,12 @@
-import PersonClass
+from flask import Flask
+from flask import request, render_template
+from PersonClass import Person
 
-yo = PersonClass.Person('208380025')
-ma = yo.get_mother()
-pa = ma.get_father()
+app = Flask(__name__)
 
-print(pa.deceased)
 
-exit()
+@app.route('/get-person')
+def get_person():
+    id = request.args.get('id')
+    return Person(id).dictify
+

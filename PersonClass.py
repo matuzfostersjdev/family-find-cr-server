@@ -18,10 +18,25 @@ class Person:
             self.__deceased = results['difunto']
 
     def get_mother(self):
-        return Person(self.__mother_id)
+        if not self.__mother_id or self.__mother_id == '' or self.__mother_id == ' ':
+            return False
+        else:
+            return Person(self.__mother_id)
 
     def get_father(self):
-        return Person(self.__father_id)
+        if not self.__father_id or self.__father_id == '' or self.__father_id == ' ':
+            return False
+        else:
+            return Person(self.__father_id)
+
+    def dictify(self):
+        return {
+            'name': self.__name,
+            'id': self.__id,
+            'aka': self.__aka,
+            'birth-date': self.__birth_date,
+            'nationality': self.__nationality
+        }
 
     @property
     def id(self):
