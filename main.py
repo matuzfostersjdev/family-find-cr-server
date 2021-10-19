@@ -7,6 +7,6 @@ app = Flask(__name__)
 
 @app.route('/get-person', methods=['GET'])
 def get_person():
-    id = request.args.get('id', type=str)
-    return Person(id).dictify
+    person_id = request.args.get('id', type=str)
+    return Person(person_id).dictify
 
