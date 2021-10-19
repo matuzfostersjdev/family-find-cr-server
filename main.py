@@ -5,8 +5,8 @@ from PersonClass import Person
 app = Flask(__name__)
 
 
-@app.route('/get-person')
+@app.route('/get-person', methods=['GET'])
 def get_person():
-    id = request.args.get('id')
+    id = request.args.get('id', type=str)
     return Person(id).dictify
 
