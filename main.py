@@ -8,5 +8,6 @@ app = Flask(__name__)
 @app.route('/get-person', methods=['GET'])
 def get_person():
     person_id = request.args.get('id', type=str)
-    return Person(person_id).dictify
+    print(person_id)
+    return Person(person_id).dictify  # Fix 3 arguments being passed
 
