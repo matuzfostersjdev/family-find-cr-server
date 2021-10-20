@@ -4,10 +4,10 @@ from bs4 import BeautifulSoup
 
 def get_person(cedula):
     # start session
-    mock_url = 'https://servicioselectorales.tse.go.cr/chc/consulta_cedula.aspx'
+    mock_url = 'https://servicioselectorales.tse.go.cr/chc/'
     with requests.session() as session:
         # get first mock request
-        mock_request = session.get(mock_url)
+        mock_request = session.get(mock_url + 'consulta_cedula.aspx')
         mock_soup = BeautifulSoup(mock_request.text, 'html.parser')
         mock_request.close()
 
@@ -31,10 +31,10 @@ def get_person(cedula):
         }
 
         # send post request
-        session.post(mock_url, data=form_data, headers=headers)
+        session.post(mock_url + 'consulta_cedula.aspx', data=form_data, headers=headers)
 
         # final response!
-        final_response = session.get('https://servicioselectorales.tse.go.cr/chc/resultado_persona.aspx')
+        final_response = session.get(mock_url + 'resultado_persona.aspx')
         with open("output1.html", "w") as file:
             file.write(str(final_response))
         final_soup = BeautifulSoup(final_response.text, 'html.parser')
@@ -51,5 +51,50 @@ def get_person(cedula):
             'fechaNacimiento': final_soup.find('span', {"id": "lblfechaNacimiento"}).find('font').get_text(),
             'nacionalidad': final_soup.find('span', {"id": "lblnacionalidad"}).find('font').get_text()
         }
+
+        # gather all the important data
+        view_state2 = final_soup.select("#__VIEWSTATE")[0]['value']
+        view_state_gen2 = final_soup.select("#__VIEWSTATEGENERATOR")[0]['value']
+        event_validation2 = final_soup.select("#__EVENTVALIDATION")[0]['value']
+        form_data2 = (
+            ('ScriptManager1', 'ctl06|btnMostrarNacimiento'),
+            ('__VIEWSTATE', view_state2),
+            ('__VIEWSTATEGENERATOR', view_state_gen2),
+            ('__EVENTVALIDATION', event_validation2),
+            ('hdnCodigoAccionMarginal', '1'),
+            ('hdnFechaSucesoMatrimonio', ''),
+            ('__EVENTTARGET', 'btnConsultaCedula'),
+            ('__ASYNCPOST', 'true'),
+            ('btnMostrarNacimiento', 'Mostrar')
+        )
+
+        children_response = session.post(mock_url + 'resultado_persona.aspx', data=form_data2, headers=headers)
+        children_soup = BeautifulSoup(children_response.text, 'html.parser')
+        children_table = children_soup.find('table', {"id": "Gridhijos"})
+
+        # if there are no children, return
+        if children_table:
+            with open("output3.html", "w") as file:
+                file.write(str(children_table))
+
+            # if there are
+            children = []
+            for tr in children_table.find_all('tr'):
+                i = 0
+                child = {}
+                for td in tr.find_all('td'):
+                    if not td.has_attr('some_attribute'):
+                        if i == 0:
+                            i = i + 1
+                            continue
+                        elif i == 1:
+                            child['cedula'] = td.get_text()
+                        elif i == 2:
+                            child['fecha_nacimiento'] = td.get_text()
+                        elif i == 3:
+                            child['nombre'] = td.get_text()
+                        i = i + 1
+                children.append(child)
+            results['children'] = children
 
     return results
