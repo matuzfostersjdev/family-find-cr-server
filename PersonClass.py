@@ -31,6 +31,8 @@ class Person:
         self.__is_dead = False if not results['difunto'] or results['difunto'] == '' else True
         if self.__is_dead:
             self.__deceased = results['difunto']
+        if 'children' in results:
+            self.__children = results['children']
 
     def get_mother(self):
         if not self.__mother_id or self.__mother_id == '' or self.__mother_id == '0':
@@ -50,7 +52,8 @@ class Person:
             'id': self.__id,
             'aka': self.__aka,
             'birth-date': self.__birth_date,
-            'nationality': self.__nationality
+            'nationality': self.__nationality,
+            'children': False if not self.__children else self.__children
         }
 
     @property
