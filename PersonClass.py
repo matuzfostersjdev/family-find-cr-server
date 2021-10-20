@@ -53,7 +53,7 @@ class Person:
             'aka': self.__aka,
             'birth-date': self.__birth_date,
             'nationality': self.__nationality,
-            'children': False if not self.__children else self.__children
+            'children': False if not hasattr(self, '__chidlren') else self.__children
         }
 
     @property
