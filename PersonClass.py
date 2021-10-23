@@ -17,8 +17,12 @@ class UnknownPerson:
 
 
 class Person:
-    def __init__(self, cedula):
-        results = person_retriever.get_person(cedula)
+    def __init__(self, datos, query=True):
+        if query:
+            results = person_retriever.get_person(datos)
+        else:
+            results = datos
+
         self.__id = results['cedula']
         self.__name = results['nombreCompleto']
         self.__aka = results['conocidoComo']
@@ -48,12 +52,24 @@ class Person:
 
     def dictify(self):
         return {
-            'name': self.__name,
-            'id': self.__id,
-            'aka': self.__aka,
-            'birth-date': self.__birth_date,
-            'nationality': self.__nationality,
-            'children': False if not hasattr(self, '__chidlren') else self.__children
+            'self': {
+                'name': self.__name,
+                'id': self.__id,
+                'aka': self.__aka,
+                'birth-date': self.__birth_date,
+                'nationality': self.__nationality,
+                'children': False if not hasattr(self, '_Person__children') else self.__children
+            },
+            'parents': {
+                'father': {
+                    'name': self.father_name,
+                    'id': self.father_id
+                },
+                'mother': {
+                    'name': self.mother_name,
+                    'id': self.mother_id
+                }
+            }
         }
 
     @property
@@ -102,3 +118,33 @@ class Person:
             return self.__deceased
         else:
             return False
+
+
+class PersonList:
+    def __init__(self, nombre='', apellido1='', apellido2=''):
+        self.results = person_retriever.get_person_by_name(nombre, apellido1, apellido2)
+        self.i = 0
+        self.__person_list = []
+        for i in range(len(self.results)):
+            self.__person_list.append(Person(self.results[i], query=False))
+
+    def __next__(self):
+        try:
+            index = self.results[self.i]
+        except:
+            raise StopIteration()
+        self.i += 1
+        return index
+
+    def __iter__(self):
+        return self
+
+    def dictify(self):
+        dict_list = []
+        for person in self.__person_list:
+            dict_list.append(person.dictify())
+        return dict_list
+
+    @property
+    def person_list(self):
+        return self.__person_list
