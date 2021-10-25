@@ -125,8 +125,12 @@ class PersonList:
         self.results = person_retriever.get_person_by_name(nombre, apellido1, apellido2)
         self.i = 0
         self.__person_list = []
-        for i in range(len(self.results)):
-            self.__person_list.append(Person(self.results[i], query=False))
+        self.__is_blank = False
+        try:
+            for i in range(len(self.results)):
+                self.__person_list.append(Person(self.results[i], query=False))
+        except:
+            self.__is_blank = True
 
     def __next__(self):
         try:
@@ -139,11 +143,17 @@ class PersonList:
     def __iter__(self):
         return self
 
+    def __len__(self):
+        return len(self.__person_list)
+
     def dictify(self):
         person_dict = {}
         for i in range(len(self.__person_list)):
             person_dict[i] = self.__person_list[i].dictify()
         return person_dict
+
+    def get_person(self, index):
+        return self.__person_list[index]
 
     @property
     def person_list(self):
